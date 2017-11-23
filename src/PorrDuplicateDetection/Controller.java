@@ -59,7 +59,9 @@ public class Controller {
         HashMap<String,Integer> final_list = new HashMap<>();
         for (Map.Entry<String,Integer> entry : a.entrySet())
         {
-            if(entry.getValue()>b.dsd
+            if(  entry.getValue() > b.get(entry.getKey())){
+
+            }
         }
         return final_list;
     }
