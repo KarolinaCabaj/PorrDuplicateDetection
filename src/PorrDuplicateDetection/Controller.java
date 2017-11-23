@@ -25,32 +25,17 @@ public class Controller {
         //loadList(pathname);
 
     }
-    /*
-    private void loadList(String pathname)  {
-        try {
-            Scanner input = new Scanner(new File(pathname));
-            while(input.hasNext())
-            {
-                wordsListToCheck.add(input.nextLine());
-            }
-            input.close();
-        }
-        catch(IOException e){
-            System.out.println("Ojoj... coś nie bangla");
-        }
 
-    }
-    */
      private HashMap<String,Integer> repeats(ArrayList<String> text){
         HashMap<String,Integer> countMap = new HashMap<>();
         int count;
-        for (String w:
-             wordsListToCheck) {
+        for (String w: wordsListToCheck) {
             count=0;
-            for (String s:
-                 text) {
+            System.out.println(wordsListToCheck.size());
+            for (String s: text) {
                 if(w.equals(s)){
                     count++;
+                    System.out.println(count);
                 }
             }
             countMap.put(w,count);
@@ -60,14 +45,14 @@ public class Controller {
 
     private HashMap<String,Integer> minimum(HashMap<String,Integer> a, HashMap<String,Integer>b){
         HashMap<String,Integer> final_list = new HashMap<>();
-        for (Map.Entry<String,Integer> entry : a.entrySet())
-        {
-            if(  entry.getValue() < b.get(entry.getKey())){
-                final_list.put(entry.getKey(), entry.getValue());
+            for (Map.Entry<String,Integer> entry : a.entrySet())
+            {
+                if(  entry.getValue() < b.get(entry.getKey())){
+                    final_list.put(entry.getKey(), entry.getValue());
+                }
+                else
+                    final_list.put(entry.getKey(), b.get(entry.getKey()));
             }
-            else
-                final_list.put(entry.getKey(), b.get(entry.getKey()));
-        }
         return final_list;
     }
     private int sumRepeats(HashMap<String,Integer> finalMap){
@@ -81,6 +66,7 @@ public class Controller {
     //metoda fasada
     public void check()
     {
+        System.out.println(wordsListToCheck.size());
         int sum=
         sumRepeats(
             minimum(
@@ -89,12 +75,12 @@ public class Controller {
             )
         );
 
-        System.out.println(sum/baseText.getListOfWordsFromText().size());
+        System.out.println(sum);//baseText.getListOfWordsFromText().size());
 
     }
 
 
-    }
+}
 
 
 

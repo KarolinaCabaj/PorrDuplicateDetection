@@ -28,7 +28,7 @@ public class Text {
         return listOfWordsFromText;
     }
 
-    private void readText()
+    public void readText()
     {
         try{
             for (String aListOfWordsFromText : listOfWordsFromText) {
@@ -51,6 +51,7 @@ public class Text {
                 listOfWordsFromText.add(s.next());
             }
             s.close();
+
         }
         catch (FileNotFoundException  e)
         {
