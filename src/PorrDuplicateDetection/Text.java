@@ -27,6 +27,7 @@ public class Text {
         return listOfWordsFromText;
     }
 
+
     public void readText()
     {
         try{
