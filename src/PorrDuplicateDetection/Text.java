@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 /**
  * Created by Karolka on 2017-11-23.
+ *
  */
 public class Text {
 
@@ -15,10 +16,10 @@ public class Text {
     private String filePath;
     private ArrayList<String> listOfWordsFromText;
 
-    public Text(String filePath)
+    Text(String filePath)
     {
         this.filePath = filePath;
-        listOfWordsFromText = new ArrayList<String>();
+        listOfWordsFromText = new ArrayList<>();
         getWordsFromFile();
         readText();
     }
@@ -27,12 +28,11 @@ public class Text {
         return listOfWordsFromText;
     }
 
-
-    public void readText()
+    private void readText()
     {
         try{
-            for(int x = 0; x < listOfWordsFromText.size(); x++){
-                System.out.println(listOfWordsFromText.get(x));
+            for (String aListOfWordsFromText : listOfWordsFromText) {
+                System.out.println(aListOfWordsFromText);
             }
         }
         catch(Exception e){
@@ -41,7 +41,7 @@ public class Text {
     }
 
 
-    public void getWordsFromFile() //throws FileNotFoundException
+    private void getWordsFromFile() //throws FileNotFoundException
     {
         Scanner s;
         try{
@@ -56,11 +56,6 @@ public class Text {
         {
             e.printStackTrace();
             System.out.println("FileNotFoundException ");
-        }
-        catch(IOException e)
-        {
-            e.printStackTrace();
-            System.out.println("IOException");
         }
 
     }
