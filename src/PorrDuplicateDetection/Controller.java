@@ -3,6 +3,8 @@ package PorrDuplicateDetection;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -36,24 +38,30 @@ public class Controller {
         }
 
     }
-     private ArrayList<Integer> repeats(ArrayList<String> t){
-        ArrayList<Integer> tmp_list = new ArrayList<>();
+     private HashMap<String,Integer> repeats(ArrayList<String> text){
+        HashMap<String,Integer> countMap = new HashMap<>();
+        int count;
         for (String w:
              wordsListToCheck) {
+            count=0;
             for (String s:
-                 t) {
-
-
+                 text) {
+                if(w.equals(s)){
+                    count++;
+                }
             }
-                
+            countMap.put(w,count);
             }
-        return tmp_list;
+        return countMap;
         }
 
-    private ArrayList<Integer> minimum(ArrayList<Integer> a, ArrayList<Integer>b){
-        ArrayList<Integer> tmp = new ArrayList<>();
-
-        return tmp;
+    private HashMap<String,Integer> minimum(HashMap<String,Integer> a, HashMap<String,Integer>b){
+        HashMap<String,Integer> final_list = new HashMap<>();
+        for (Map.Entry<String,Integer> entry : a.entrySet())
+        {
+            if(entry.getValue()>b.
+        }
+        return final_list;
     }
     //metoda fasada
     public void check(){
