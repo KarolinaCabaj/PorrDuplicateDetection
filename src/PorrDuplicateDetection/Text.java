@@ -23,6 +23,9 @@ public class Text {
         readText();
     }
 
+    public ArrayList<String> getListOfWordsFromText() {
+        return listOfWordsFromText;
+    }
 
     public void readText()
     {
