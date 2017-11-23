@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -15,13 +16,14 @@ public class Text {
     private File file;
     private String filePath;
     private ArrayList<String> listOfWordsFromText;
+    ArrayList<String> listCharacterToChange = new ArrayList<>(Arrays.asList(".", ",", ";", ":", ")", "(", " - ", "[", "]"));
 
     Text(String filePath)
     {
         this.filePath = filePath;
         listOfWordsFromText = new ArrayList<>();
         getWordsFromFile();
-        readText();
+        //readText();
     }
 
     public ArrayList<String> getListOfWordsFromText() {
@@ -40,24 +42,30 @@ public class Text {
         }
     }
 
-
     private void getWordsFromFile() //throws FileNotFoundException
     {
         Scanner s;
         try{
             file = new File(filePath);
-            s = new Scanner(file);
+            s = new Scanner(file, "utf-8");
             while (s.hasNext()) {
-                listOfWordsFromText.add(s.next());
+                String str = new String(s.next());
+                listOfWordsFromText.add(changeCharacter(str));
             }
             s.close();
-
         }
         catch (FileNotFoundException  e)
         {
             e.printStackTrace();
             System.out.println("FileNotFoundException ");
         }
+    }
 
+    private String changeCharacter(String str)
+    {
+        for (String ch: listCharacterToChange) {
+                str = str.replace(ch , "");
+        }
+        return str;
     }
 }

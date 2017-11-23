@@ -20,10 +20,8 @@ public class Controller {
         this.baseText=baseText;
         this.examinedText=examinedText;
         this.wordsToCheckText = wordsToCheckText;
-        wordsListToCheck= wordsToCheckText.getListOfWordsFromText();//new ArrayList<>();
+        wordsListToCheck= wordsToCheckText.getListOfWordsFromText();
         numerOfreats=new ArrayList<>();
-        //loadList(pathname);
-
     }
 
      private HashMap<String,Integer> repeats(ArrayList<String> text){
@@ -40,6 +38,7 @@ public class Controller {
             }
             countMap.put(w,count);
             }
+            countMap.entrySet().forEach(System.out::println);
         return countMap;
         }
 
@@ -66,7 +65,6 @@ public class Controller {
     //metoda fasada
     public void check()
     {
-        //System.out.println(wordsListToCheck.size());
         int sum=
         sumRepeats(
             minimum(
@@ -74,12 +72,8 @@ public class Controller {
                 repeats(examinedText.getListOfWordsFromText())
             )
         );
-
-        System.out.println(sum);///baseText.getListOfWordsFromText().size());
-
+        System.out.println("Poziom podobienstwa: " + (double)sum/baseText.getListOfWordsFromText().size()*100 + "%");
     }
-
-
 }
 
 
