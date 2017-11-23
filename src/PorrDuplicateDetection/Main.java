@@ -8,13 +8,13 @@ public class Main {
     {
         Text baseText = new Text("cos1.txt");
         System.out.println("to sa dla text cos1");
-        baseText.readText();
+        //baseText.readText();
         Text examinedText = new Text("cos2.txt");
         System.out.println("to sa dla text cos2");
-        examinedText.readText();
+        //examinedText.readText();
         Text wordsToCheckText = new Text("check.txt");
         System.out.println("to sa dla text check");
-        wordsToCheckText.readText();
+        //wordsToCheckText.readText();
 
         Controller control = new Controller(baseText, examinedText, wordsToCheckText);
         control.check();

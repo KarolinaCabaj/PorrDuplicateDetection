@@ -31,11 +31,11 @@ public class Controller {
         int count;
         for (String w: wordsListToCheck) {
             count=0;
-            System.out.println(wordsListToCheck.size());
+            //System.out.println(wordsListToCheck.size());
             for (String s: text) {
                 if(w.equals(s)){
                     count++;
-                    System.out.println(count);
+                    //System.out.println(count);
                 }
             }
             countMap.put(w,count);
@@ -66,7 +66,7 @@ public class Controller {
     //metoda fasada
     public void check()
     {
-        System.out.println(wordsListToCheck.size());
+        //System.out.println(wordsListToCheck.size());
         int sum=
         sumRepeats(
             minimum(
@@ -75,7 +75,7 @@ public class Controller {
             )
         );
 
-        System.out.println(sum);//baseText.getListOfWordsFromText().size());
+        System.out.println(sum);///baseText.getListOfWordsFromText().size());
 
     }
 
