@@ -70,10 +70,29 @@ public class Controller {
         }
         return final_list;
     }
+    private int sumRepeats(HashMap<String,Integer> finalMap){
+        int sum=0;
+        for (Map.Entry<String,Integer> map:
+                finalMap.entrySet()) {
+            sum+=map.getValue();
+        }
+        return sum;
+    }
     //metoda fasada
-    public void check(){
+    public void check()
+    {
+        int sum=
+        sumRepeats(
+            minimum(
+                repeats(baseText.getListOfWordsFromText()),
+                repeats(examinedText.getListOfWordsFromText())
+            )
+        );
+
+        System.out.println(sum/baseText.getListOfWordsFromText().size());
 
     }
+
 
     }
 
