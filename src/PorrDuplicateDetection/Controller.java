@@ -50,6 +50,16 @@ public class Controller {
         return tmp_list;
         }
 
+    private ArrayList<Integer> minimum(ArrayList<Integer> a, ArrayList<Integer>b){
+        ArrayList<Integer> tmp = new ArrayList<>();
+
+        return tmp;
+    }
+    //metoda fasada
+    public void check(){
+
+    }
+
     }
 
 
