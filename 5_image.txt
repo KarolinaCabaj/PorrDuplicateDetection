@@ -1,0 +1,1851 @@
+A Neural Network Architecture
+for General Image Recognition
+Robert L. Harvey, Paul N. DiCaprio, and Karl G. Heinemann
+• As part ofLincoln Laboratory's research on neural network technology, a generalputpose machine vision system that can learn to recognize diverse objects has been
+designed. The system models human vision, primarily with neural networks, and the
+learning is by example.
+We tested the system on two disparate classes ofobjects-military vehicles and
+human eells-with video images of natural scenes. These objects were chosen
+because large databases were available and because most researchers judged the two
+types of objects unrdated. When we trained and tested the system on 40 images of
+military vehicles, the system was able to recognize the tanks, howitzers, and armored
+personnel carriers without any errors. Pathologists at Lahey Clinic Medical Center
+collaborated in the cytology study in which we trained and tested the system on
+156 cell images from human cervical Pap smears. The system recognized normal and
+abnormal (Le., precancer) cells perfectly. Because ofthe small number of samples of
+the military vehicles and Pap-smear cells, these results are preliminary.
+We should note that the architecture ofthe system is applicable to many civilian
+and military tasks. The application depends mainly on training.
+
+If one
+
+way be better than another, that you may be sure is
+Nature's way.
+-Aristode
+
+machine vision (MY) technology for more than 30 years.
+As a result of their work, a standard technology
+for computer vision has evolved. The most rigorous of
+the conventional MY methods comes from D. Marr's
+work at MIT in the 1970s (see the box "Conventional
+Machine Vision Design"). Yet, to some researchers and
+potential users, the performance of conventional MY
+systems is disappointing. To establish the context of our
+work, we quote from a recent review byA. Rosenfeld []],
+a founder and leading MY figure:
+
+R
+
+ESEARCHERS HAVE BEEN STUDYING
+
+... Standard vision techniques for feature detection,
+segme,ntation, recovery,' etc., often do not perform
+very well when' applied ro natural scenes.
+Ideally, the [vision process] stages should be closely integrated; the results obtained ar a given stage
+should, provide feedback to modify the techniques
+used at previous stages. This is rarely done in existing
+
+vision systems, and as a result, lide is known about
+how to design systems that incorporate feedback between stages.
+. . . Humans can recognize objeets--even complex objects whose presence was unexpected-in a
+fraction of a second, which is enough time for only a
+few hundred (!) "cycles" of the neural "hardware" in
+the human visual system. Computer vision systems
+have a long way to go before they will be able to
+match this performance.
+
+Our main goal was to develop a general MY architecture that would work on a variety ofimage types without
+significant changes in the algorithm. This robusmess
+contrasts with the current practice of tailoring an MY
+system to a specific application. Such tailored systems
+have not performed well in situations unforeseen by the
+designers.
+In many respects the human vision system-known
+for its high performance over a wide range ofobjects and
+situations--is far superior to current MY systems. Thus,
+in developing the architecture ofour system, we decided
+to model the human vision system. Although this idea
+VOLUME 4. NUMBER 2. 1991
+
+THE LINCOLN LABORATORY JOURNAL
+
+189
+
+• HARVEY ET AL
+
+A Neural Network Architecture for General Image Recognition
+
+CONVENTIONAL MACHINE
+VISION DESIGN
+conventional
+machine vision (MY) technology
+evolved from the work ofone man,
+D. Marr, at MIT in the 1970s.
+Developed from the information
+theory, cybernetics, and digital computer technology of that era, Marr's
+contributions were made within the
+field of artificial intelligence. His
+work led to numerous papers on
+vision and, finally, to the book
+Vision [l], which was published
+after Marr died ofleukemia in 1980
+at the age of 35. Reference 2 provides a recent summary of Marr's
+work in relation to that ofothers.
+An acknowledged contribution
+of Marr's was his attempt to clarify
+the thinking about vision systems
+or, more generally, information processing systems. In his work, Marr
+introduced the distinction among
+three levels of explanations: (1) the
+computational theory, (2) the algorithm, and (3) the hardware implementation. Consideration of
+these levels and associated issues
+leads to a sequence ofquestions that
+guides the design.
+At the time, Marr's explicit ideas
+somewhat puzzled researchers in
+vision because other approaches
+used concepts that were undefined,
+or they used descriptions rather
+than explanations. Marr attained a
+high degree of rigor because his approach produced ideas that could
+TO A MAJOR EXTENT,
+
+190
+
+THE LINCOLN LABORATORY JOURNAL
+
+be directly checked by computer
+simulation.
+At the computational-theory level, Marr assened that the key issue
+is to determine both a goal for the
+computation and strategies for
+achieving that goal. By explicitly
+stating the goal and accompanying
+strategies, we can describe what the
+machine achieves and characterize
+the constraints. Knowledge of the
+constraints, in turn, allows the
+processes to be defined. At the algorithm level, the key issue is how
+the input and output are represented, and the actual algorithm for
+transformation. The algorithm will
+depend partially on the nature of
+the data representation. At the implementation level, the key issue is
+how the machine acrually works.
+The concern here is with the hardware of the machine, and the nature and operation of its component parts.
+For example, applying Marr's approach to optical sensors and twodimensional processing leads to a
+modular design with the following
+consecutive processing stages:
+Stage 1. Extract features such as
+edges from an image to produce a
+map representation. The map
+(called the primal sketch) consists
+of pixels and their feature values,
+such as edge strengths. (In this context, edge strengths are various com-
+
+VOLUME 4. NUMBER 2. 1991
+
+binations offirst and second derivatives at each point in the image.)
+Stage 2. Improve the map
+by grouping pixels in connected
+regIons.
+Stage 3. Represent the map by an
+abstract relational structure.
+Stage 4. Recognize objects by
+comparing the strUcture with stored
+models.
+Three-dimensional scenes are an
+extension oftwo-dimensional ones.
+For the extension to three dimensions, stages 1 and 2 should be
+replaced by a method to find the
+surface orientation ofeach pixel. The
+process will produce a representation map called the 2Y2-D sketch.
+Further extensions of Marr's
+method add one or more of the
+following stages: (1) cleanup of input pixel values with image-restoration techniques, (2) production of
+multiple images for stereomapping and motion analysis, (3) adjustment of the processing by
+feedback from later stages to earlier
+stages, and (4) recognition of objects by matching them with models made up of composite parts.
+Refl!rences
+1. D. Man, Vision (W.H. Freeman, San
+Francisco, 1982).
+2. 1. Gordon, "Marr's Computational Approach to Visual Perception,» in Theo-
+
+,us of Vzsual Pl!rception Oohn Wiley,
+ew York, 1989), chap. 8.
+
+• HARVEY ET AL.
+
+A Neural Network Architecturefor General Image Recognition
+
+was not new, our approach was; it was to model the
+entire system module by module, primarily through the
+use of neural networks. We also incorporated features
+that give the human vision system advantages over MY
+systems, namely, feedback, parallel architecture, and a
+flexible control structure. We tested the system module
+by module and in its major composite subsystems.
+Two new technologies made this study feasible: neural network theory and a new class ofcomputers. These
+technologies were not available in the 1970s, when
+Marr developed his method.
+
+based the functions and names of different modules on
+structures in the human vision system (see the box "Human Vision-A BriefSurnrnary"). The modules roughly
+approximated functions of their biological counterparts.
+For convenience, we used a mixture of neural networks
+and standard processing algorithms to implement the
+module functions.
+Our system recognizes gray images in a field of view
+(FOY); the images can have arbitrary translations and
+rotations. We omitted certain biological features-binocularity, size invariance, motion perception, color sensitivity, and the discernment of virtual boundaries-because we wanted to study the simplest architecture.
+Moreover, these features are unnecessary for many appli-
+
+The Approach-A Biologically Inspired System
+Our approach was to model the human brain. Thus we
+
+A20
+
+r+f
+
+SUM
+
+II
+
+•
+ITC1
+
+A18
+
+LGN
+
+~ I'CALIBRATE
+
+I
+•
+
+,"
+
+w
+
+•
+
+".,
+
+.$
+
+~.
+
+'._
+
+NORMALIZE
+
+Input
+Image
+
+k • ( ; J'
+
+;g" '
+
+525@} 1*
+
+I
+
+I
+
+.
+
+~
+
+A21
+
+V2I.A,V~,~,~,~~1
+
+ITC2
+
+IVISAREA21
+A17
+
+Fine
+Adjustment
+
+V1
+..
+
+I
+
+SPIRAL
+MAP
+
+I
+~
+
+525
+
+Coarse
+Adjust.ent
+
+...
+
+SUPERC
+
+...
+...
+
+El
+
+"I STO
+
+IVISAREA11
+A71
+PPC
+HADJUSTMENT
+
+I
+
+II
+
+DELTA1
+
+I .-
+
+DELTA2 I
+
+t
+
+I
+
+Enable
+
+.... Principal Data Flow Paths
+~ Tuning and Control Paths
+
+FIGURE 1. Block diagram of the neural network architecture. The modules that are in the location channel are shown
+shaded in yellow, the modules in the classification channel are shaded in blue, and the modules common to both
+channels are shaded in gray. Some modules are neural networks; others use conventional processing (see text). A
+525 x 525 image with 8-bit pixels has been included at the left of the figure as an example input image. (Note: See the
+box "Glossary of Acronyms" for definitions of the acronyms used.)
+
+VOLUME 4, NUMBER 2, 1991
+
+THE LINCOLN LABORATORY JOURNAL
+
+191
+
+• HARVEY ET AL.
+
+A Neural Network Architecture ftr General Image Recognition
+
+HUMAN VISIONA BRIEF SUMMARY
+has three main
+structures-the forebrain, the midbrain, and the hindbrain. Figure A
+(top) shows the forebrain, or neocortex. Red indicates some of the
+areas associated with vision.
+
+THE HUMAN BRAIN
+
+The visual cortex occupies the
+entire back half of the neocortex
+hemisphere. At least a dozen cortieal areas (not all shown in Figure A
+but described by D.H. Hubel in
+Reference 1) are involved with the
+
+vision process. Areas 17, 18, and 19
+are feature detectors, areas 20 and
+21 function as classifiers, and area
+7b helps to locate objects in the
+field of view (FOY). (Note: The
+numbering scheme was originated
+
+Legend
+
+<J
+
+Synapse (Weights)
+
+o
+
+Typical Neuron
+
+Area 20, 21
+Area 18
+
+Y Retina Cell
+Area 17
+
+X Retina Cell
+
+Area 8
+
+Temporal
+
+LGN
+
+Area 7
+
+FIGURE A. Neural network vision model: (top) sketch of human forebrain in which areas associated with
+vision are shown shaded in red, and (bottom) block diagram of human vision process.
+
+cations (see the section '~pplications and Extensions").
+The architecture of the system includes two major
+channels that work together. The location channel searches for objects of interest in the FOV and, after one is
+192
+
+THE LINCOLN LABORATORY JOURNAL
+
+VOLUME 4, NUMBER 2, 1991
+
+found, the classification channel classifies it. Studies of
+the human vision system as well as that of other animals
+suggest that the locating and classifYing functions are
+separate [2].
+
+• HARVEY ET AL.
+
+A Neural Network Architecture for General Image Recognition
+
+by K Brodmann in 1909.)
+Cenain modules in the midbrain
+also belong to the visual system: for
+example, the lateral geniculate nucleus (LGN), shown in Figure A
+(bottom). The optic nerves relay
+the images captured by the eyeballs
+to the LGN, which has processing
+functions and acts as a buffer.
+8
+The retina has about 1.25 X 10
+receptors. Data compression by retinal ptocessing is about 125 to 1,
+which gives a resolution near the
+fovea of abour 1000 X 1000 pixels.
+Assuming 7 bits ofrelative discrimination of stimulus frequency per
+pixel [2] and a 100-Hz pulse frequency along the optic nerve, we
+find that the data rate to the visual
+cortex is about 700 Mb/sec, less
+than the capacity of fiber optic
+channels.
+Researchers have mapped over
+30 pathways among the visual areas
+bur the actual number probably is
+much larger because there are many
+connections to areas that have not
+been studied. A basic finding is that
+with few exceptions the pathways
+connect the modules in reciprocal
+fashion.
+Evidence shows a hierarchical
+structure for the vision system [3]for the dozen visual areas, the overall cortical hierarchy has six levels.
+Anatomical, behavioral, and physiological data show two distinct
+channels for classifying and locating. In Figure A (bottom), the classification channel consists of the
+
+LGN, AI7, AI8, AI9 (not shown
+in the figure), AlO, and All; the
+location channel consists of the
+LGN, AI8, A7, andA8.
+The two channels separate at the
+retina and they have their own retinal cells, labeled X and Y (Another
+cell type not shown, the W cell,
+goes to the midbrain areas to coordinate the FOV to head and eye
+movements). At the cortical and
+midbrain levels, the channels remain separate. Evidence shows
+the classification channel analyzes
+form and color while the location
+channel analyzes visual motion
+across the FOY:
+In AI7, AI8, and AI9, three
+types of cells work like feature detectors. The features in primate vision are stationary or moving edges,
+slots or lines, and their respective
+ends [1]. (In comparison, the features in current MY technology are
+much more varied: corners, human
+faces, spatial frequencies, and responses of matched filters are typically used).
+The population of retinal cells
+that feed into a given feature cell are
+not scattered about all over the
+retina bur are clustered in a small
+area. This area of the retina is
+called the receptive field of the feature cell. The size of the receptive field of simple cells is about
+one-quarter degree by one-quarter
+degree at the fovea.
+Research shows that feedback
+rakes place in the human vision sys-
+
+Figure 1 shows a block diagram of the architecture,
+the box "Glossary of Acronyms" contains a list of the
+acronyms used, and the following sections briefly describe the functions of each module. We used feed-
+
+tern [4]. In normal operation, stimulating AlO changes the receptive
+fields of AI7. This result suggests
+that AlO exerts feedback conuol
+over the feature detectors. Thus recognition is likely an active feedback
+process that restructures the featureextraction stage. The restructuring
+continues until the transformed input matches some known class of
+stimulus. Research also suggests that
+there is a mechanism for directing
+attention within the FOY: In short,
+windowingrakes place. Wmdowing
+focuses attention on small derails
+and also suppresses notice of other
+objects in the FOY: Researchers suspect that the midbrain directs the
+windowing process auromatically,
+perhaps by using cortical inputs.
+In summary, human vision is a
+system in which a small number of
+serial stages (sensor-preprocessorfeature-extracting-classifier) process large arrays of data in parallel.
+The architecture has two channels
+that use feedforward and feedback
+signals.
+References
+1. D.H. Hubel, Eye, Brain, and Virion
+(W.H. Freeman, New York, 1988).
+2. T.B. Sheridan and W.R. Ferrell, ManMachine Sysrems (MIT Press, Cambridge, 1974), p. 261.
+3. D.C. Van Essen and ].H.R. Maunsell, "Hierarchical Organization and
+Functional Streams in the Visual
+Cortex," Trends Neurosci. 6, 370
+(l983).
+4. E.W. Kent, The Brains ofMan and
+Machines (McGraw-Hill, New York,
+1981).
+
+forward and feedback paths to coordinate the modules.
+To illustrate how the system works, we carry through an
+example of a 525 X 525-pixel input image with 8-bit
+pixels. For convenience, we start our description with
+
+VOLUME 4, NUMBER 2, 1991
+
+THE LINCOLN LABORATORY JOURNAl
+
+193
+
+• HARVEY ET AL.
+
+A Neural Network Architecturefor General Image Recognition
+
+the classification channel and the modules that are common to both channels.
+
+ical correspondence, as described below.
+
+LGN-Grayness Processing
+Classification Channel
+Certain classification-channel modules approximate
+the functioning of selected brain areas: the lateral geniculate nucleus (LGN), visual area 1 (VI, also called
+AI7; see the box "Human Vision-A Brief Summary"), visual area 2 (V2, also called AI8), inferior
+temporal cortex 1 (ITCI, also called AlO), and inferior temporal cortex 2 (ITC2, also called All).
+Other modules, such as the SUM module, approximate certain biological functions without the anatom-
+
+GLOSSARY OF
+ACRONYMS
+
+Figure 2 shows the front-end processing in the classification channel. The LGN uses inputs from the location
+channel (see the following section) to place a window
+around an object. We set the window size to fit the
+object, so the system does not emulate size invariance.
+Starting with a 525 X 525-pixel input image, our example uses a window of 175 X 175 pixels.
+The CALIBRATE and NORMALIZE boxes ofLGN
+(Figure 1) operate on gray-scale imagery. CALIBRATE
+performs a histogram equalization of the object's pixel
+values, and NORMALIZE rescales the pixel values so
+that they leave LGN within a range from zero to one.
+These two procedures enhance the image contrast and
+adjust for varying brightness in the FOY:
+
+Vl-High-Resolution Features
+FOV-field ofview
+ITCI-inferior temporal cortex 1 (also called
+AlO); an unsupervised classifier
+ITC2-inferior temporal cortex 2 (also called
+All); a supervised classifier
+LGN-lateral geniculate nucleus; buffers and
+places a window around an object
+LTM-Iong-term memory
+MY-machine vision
+PPG--posterior parietal cortex; centers a window about an object
+SUPERG--superior colliculus; performs coarse
+location ofan object
+VI-visual area 1 (also called AI7); extracts
+high-resolution features from an image
+V2-visual area 2 (also calledAI8); extracts
+information about an object's general shape
+
+194
+
+THE LINCOLN LABORATORY JOURNAl
+
+VOLUME 4, NUMBER 2,1991
+
+The first feature-generating module is VI, which breaks
+the input window into subwindows of 7 X 7 pixels.
+Thus, in our example ofa 175 X 175-pixel window, there
+are 625 subwindows. Note that the 7 X 7 subwindow size
+is unrelated to the input image size. Each 7 X 7 subwindow
+is then processed by SPIRAL MAP and VISAREAI.
+SPIRAL MAP (Figure 1) scans through the subwindows in a spiral pattern. The mapping proceeds as follows: left to right across the top row, down the right
+column, right to left across the bottom row, up the left
+column, back across the second rovv, and so forth until
+the process ends at the center subwindow. The purpose
+of the spiral mapping is to simplify interpretation of the
+feature data.
+VISAREAI (Figures 1 and 2) does the high-resolution feature extraction. For each 7 X 7-pixel subwindow,
+VISAREAI measures luminance gradients (increasing or
+decreasing) in four different directions. A gradient is a
+characteristic ofgray images, and is analogous to an edge
+in a binary image. The luminance gradient in our system
+is the rate ofchange, or slope, in brightness across a 7 X 7
+subwindow. Windows with an abrupt step in brightness
+in one direction will have a large gradient in that direction; windows with a gradual change in brightness from
+one side to the other will have a small gradient; and
+windows with uniform brightness, i.e., windows with no
+visible edges, will have zero gradient.
+
+• HARVEY ET AL
+
+A Neural Network Architecturefor General Image Recognition
+
+Feature Vector
+(SUM)
+1
+Line
+Typical
+Cell
+
+525
+
+I/~IJ
+I,,//
+
+Normalized
+Image
+
+(V2)
+4
+Lines
+
+I
+175
+
+1
+
+7
+
+~
+
+~
+
+Location
+Adjust
+/i x,/iy
+
+(V1 )
+2500
+Lines
+
+FIGURE 2. Summary of image processing operations. For the example of a 525 x 525 input image (Figure 1), the
+classification channel places a window of 175 x 175 pixels around the object in the image. (The window size is set to
+fit the object size.) The 175 x 175 window is then broken into subwindows to extract details of the image, and the
+details are stored in a feature vector.
+
+Because the slope depends on direction, the gradients
+in different directions are usually not the same. The
+system produces representative gradients in four directions-vertical, horiwntal, and the 45° diagonals-for
+each 7 x 7 subwindow.
+The gradient detectors in the system use cooperativecompetitive neural networks that model similar biological processes. In biological nervous systems, a neuron is
+either excitatory or inhibitory; i.e., it either attempts to
+turn on or turn offother neurons [3]. A general cooperative-competitive neural network employs a mixture of
+interacting excitatory and inhibitory neurons. Cooperative-competitive neural networks are one type of neural
+network. Other common types are special cases that can
+consist of only inhibitory neurons, which produce oncenter/off-surround networks.
+For binary images, we found that on-centerloff-sur-
+
+round networks could detect the edges and measure their
+orientations. However, the gradients in gray images required cooperative-competitive networks for the same
+tasks. Our feature-extracting neural networks had 25
+hidden neurons and one output neuron. We used fixed
+neuron connection weights that we computed off-line by
+a genetic algorithm method, described in Reference 4.
+To help interpret the feature values obtained from
+SPIRAL MAP and VISAREAl, we arranged the VI
+outputs in a vertical vector (Figure 2). For the 175 x 175pixel window, there were 2500 VI feature values because
+each 7 X 7 subwindow produced four values. We stored
+feature values from the image's outer parts at the top of
+the vector and feature values from inner parts at the
+bottom of the same vector. Thus data about the general
+shape ofan image could be found at the top ofthe vector
+and data about the interior at the bottom.
+
+VOLUME 4, NUMBER 2, 1991
+
+THE LINCOLN LABORATORY JOURNAL
+
+195
+
+• HARVEY ET AL.
+
+A Neural Network Architecturefor General Image Recognition
+
+V2-Shape Features
+The second feature-generating module is V2 (Figures
+1 and 2), which detects edges near the perimeter of
+the input window. V2 is also part of the location channel
+(see the following section), and its output contains information about an object's general shape.
+To detect edges, V2 produces a single defocused 7 x 7
+image of the 175 x 175 input. In the defocused image,
+each pixel corresponds to a subwindow of the original
+input. AVERAGE sets a subwindow size that partitions
+the input image and then computes a mean pixel value
+for each of the subwindows. For the 175 X 175-pixel
+window, the subwindows are 25 X 25 pixels.
+VISAREA2 detects edges near the four sides ofthe defocused image. The output of this module, which uses
+cooperative-competitive neural networks similar to those
+in VI, contains four values that measure the edge strengths
+on the north, east, south, and west sides ofthe 175 X 175
+unage.
+
+neural network classifiers, such as perceptrons and
+Hopfield nets, because of ART-2's speed, stability, feature amplification, and noise reduction-features that
+were better suited to our application. ART-2 is also a
+better model of the biology.
+Adaptive Resonance Theory (ART) is a learning theory introduced by Boston University professors G. Carpenter and S. Grossberg [5]. ART mimics the human
+brain by taking inputs from the environment, organizing
+the inputs into internally defined categories, and then
+recognizing similar patterns in the future.
+
+Q)
+
+u
+
+c
+
+Turnoff
+and
+Reset
+F2 Nodes
+
+ctl
+
+Ol .....- - ,
+
+>
+
+CompareM-"......
+Norm
+
+.....&_...&..._L----"_....L._.&-_
+
+Feature vector
+The system classifies objects by using features based on
+detailed structure (VI), overall shape (V2), and size
+(SUM). The different subwindow sizes of VI, V2, and
+SUM approximate the different size-receptive areas of
+the visual conex. For the 175 X 175-pixel window, there
+are 2500 values from VI, four values from V2, and one
+value from SUM. These 2505 values form the feature
+vector. We can adjust the values ofeach module's output
+to give equal influence to an object's size, shape, and
+detailed structure (see the section "Test Results").
+
+fTC] Module-Unsupervised Clmsification
+The recognition process consists ofan unsupervised classifier (ITCl) followed by a supervised one (!TC2). For
+the unsupervised classifier, we used the well-known
+ART-2 neural network. We selected ART-2 over other
+196
+
+THE LINCOLN LABORATORY JOURNAl
+
+VOLUME 4. NUMBER 2, 1991
+
+I
+
+F1
+
+Level
+
+SUM-Size Feature
+The third feature-generating module is SUM (Figures 1
+and 2), which adds up the pixel values of the input
+window. Thus the single output from SUM measures
+the object's gross size. The corresponding biological function occurs in both VI and V2, but we have made it
+separate for the sake ofconvenience.
+
+F2
+} Level
+
+I
+
+Input
+Feature
+Vecto r
+
+FIGURE 3. Summary of the ART-2 classifier, a neural
+network with two levels F1 and F2 that consist of interconnected neurons. The bottom layer of F1 receives an
+input pattern that is then filtered, enhanced, and rescaled
+by the three F1 layers. The filtered pattern appears at F1 's
+top layer, which is connected to the F2 level. The filtered
+pattern is the pattern that ART-2 stores.
+
+There are three classes of ARTs. ART-I, which was
+developed first, is used with binary inputs; ART-2 is used
+with patterns consisting of real numbers; and ART-3
+handles sequences ofasynchronous input patterns in real
+time. This study used ART-2. Several versions ofART-2
+exist, but they all have the same basic characteristics
+described below.
+Figure 3 shows the basic structure ofART-2, a neural
+network with two levels of interconnected neurons, F 1
+and F2• The neurons are mathematical models ofbiological neurons. In the figure, the bottom layer ofF 1 receives
+the input pattern-a list of numbers representing the
+input. F 1 consists of three layers of interconnected neurons that filter out noise, enhance the shape of the
+pattern, and rescale the input pattern values. The filtered
+pattern appears at Fl's top layer, which is connected to
+
+• HARVEY ET AL.
+
+A Neural Network Architecturefor General Image Recognition
+
+the F2 level. The filtered pattern, called the exemplar, is
+the pattern that ART-2 stores.
+In the F2 level, each neuron represents a category, or,
+with high sensitivity (see below), one example input that
+defines a category. The activation of F 1 and F2 models
+the activation of biological neurons.
+The F 1 and F2 levels are connected in both a bottomup and top-down fashion by the long-term-memory
+(LTM) trace. Mathematically, the LTM trace is the set of
+weights given to the F 1 neurons as they attempt to turn
+on an F2 node. Functionally, the LTM trace stores information permanently or until the trace is modified by
+learning. The LTM trace models the synaptic junctions
+of biological neurons.
+To train an ART-2, the initial LTM trace values are set
+according to a rule given by Carpenter and Grossberg
+[5]. Next, a set of training patterns is presented to Flone
+after another. Initially, when ART-2 is untrained, the first
+pattern immediately causes the neural network to enter
+into the learning mode. The network learns the pattern
+by modifying the weights associated with one of the F2
+nodes.
+After the first pattern is learned, each succeeding pattern will trigger the network to search for a match among
+the F2 nodes. Ifthe pattern is a close match to a previously learned pattern, ART-2 enters the learning mode and
+modifies the LTM trace so that the trace is a composition
+of all the past, closely matched patterns. If the pattern is
+mismatched with all the previously learned patterns,
+ART-2 goes into the learning mode and learns the pattern by modifYing the weights associated with an unused
+F2 node. Thus each pattern is automatically associated
+with an F2 node, and in this manner ART-2 programs
+itse1£
+After training is completed and a new pattern is presented, the pattern's exemplar is produced, and ART-2
+searches the LTM trace for the stored pattern that most
+closely matches the exemplar. When a match is found
+the corresponding F2 neuron turns on, indicating the
+category that best matches the pattern.
+Before using ART-2, we must set several parameters
+that influence the network's performance. For many of
+these parameters, suitable values have been determined
+by experience. One parameter of imponance is the Vigilance, which serves as a threshold on the degree of similarity between the LTM trace and the input pattern's
+
+exemplar. If a cenain mathematical matching formula
+equals or exceeds the Vigilance, that pattern will be
+associated with the corresponding F2 node. When the
+Vigilance criterion is not satisfied, ART-2 declares a mismatch and searches for a match among the other nodes.
+The selection of a low Vigilance value (i.e., a value
+near 0) leads the system to tolerate large differences,
+resulting in coarsely defined categories. A high Vigilance
+value (i.e., a value near 1) leads to increased sensitivity in
+pattern discrimination, resulting in finely defined categories. In practice, the Vigilance should be adjusted high
+enough to distinguish patterns that represent different
+categories. However, the value should be low enough
+that slight changes resulting from incomplete or wrong
+information will not cause mismatches.
+
+ITC2 Module-External Labels and Flexible Control
+After training, the ITC1 (ART-2) output nodes in F2
+correspond to particular patterns, or objects. For instance, if the first ten examples are tanks, the first ten
+ITC1 output nodes will correspond to tanks. In our
+basic system, the supervised classifier ITC2 uses a simple
+logical OR operation to associate activity of any of these
+nodes with the name TANK
+(Note: ITC1 is called an unsupervised classifier because the label of an input pattern is the F2 node number, which is automatically and internally defined by the
+algorithm. ITC2 is called a supervised classifier because
+the user defines the labels externally.)
+After ITC2 processing, the system decides whether to
+store the object's name and location, and the ART-2
+matching parameter [5] serves as a confidence measure
+for the decision process. If the matching parameter just
+passes a threshold (the Vigilance), the confidence level is
+50%. A perfect match corresponds to a confidence level
+of 100%. If the confidence level passes a second threshold specified by the user, the system stores the results. But
+if the confidence is not high enough, the location channel adjusts the window (discussed in the following section) and the system processes the image again.
+
+Location Channel
+The location channel places an input window around an
+object so that the system might classifY it. As shown in
+Figure 1, the location channel consists of the following
+modules: superior colliculus (SUPERC), LGN, V2, and
+
+VOLUME 4, NUMBER 2, 1991
+
+THE LINCOLN LABORATORY JOURNAL
+
+197
+
+• HARVEY ET AI...
+
+A Neural Network Architecturefor General Image Recognition
+
+posterior parietal cortex (PPe). Location is a two-stage
+process consisting ofcoarse location followed by pull-in.
+
+SUPERG-Coarse Location
+The SUPERC module uses a second ART-2 neural network to perform coarse location. The network's LTM
+trace, which we compute off-line, corresponds to general
+shapes ofinterest. This trace primes the system. To detect
+the presence ofan object, the SUPERC ART-2 compares
+the exemplar of its current window to the LTM trace.
+Even an off-center object will trigger a match if the
+object's size is correct.
+SUPERC judges a match by comparing the ART-2
+matching parameter with a threshold [5]. If the system
+does not find a match, SUPERC shifts its attention to an
+abutting window. When a match does occur, SUPERC
+sends signals to other modules; the ART-2 matching
+parameter is an Enable signal for LGN, and the PPC
+module receives the coarse position as a starting point to
+center the window.
+
+PPC-Pull-In
+Pull-in operates over a feedback path that consists of
+LGN, V2, and ppe. Using the outputs of V2, PPC
+makes small changes in the window's position. When the
+system centers a window on an object, all the V2 edge
+strengths are about equal. Otherwise, PPC tries to equalize the V2 edge strengths. For example, Figure 2 shows
+an object that is above and to the right of the window.
+This position produces a stronger north than south response and a stronger east than west response because of
+the stronger gradient. To center the object, the D ELTA-1
+box (Figure 1) must move the window north and east.
+A second pull-in path, which consists of LGN, V2,
+ITC1, ITC2, and PPC, makes repeated tries at recognition. ITC2 activates this path when the classification
+channel has low confidence in a match between an input
+pattern and the closest stored pattern. When the path is
+activated, the DELTA-2 box generates a small, random
+adjustment ofthe window's position and the system then
+tries to classify the object with greater confidence. A
+counter limits the number of tries.
+
+The Software Testbed
+One of our major goals was to test the architecture with
+computer simulation. To that end, we developed a series
+198
+
+THE LINCOLN LABORATORY JOURNAL
+
+VOLUME 4. NUMBER 2. 1991
+
+ofsoftware testbeds to study the algorithm performance.
+As we programmed the testbeds to handle more complex
+and extensive data, the architecture and algorithms
+evolved.
+We built up the software in three stages. The earliest
+version was written in the APL*PLUS programming
+language and ran on an IBM PCIAT. Using synthetic binary images such as alphabetic letters, the
+APL*PLUS software tested algorithms for the individual
+modules.
+We developed a second version for Sun Microsystems
+workstations. The Sun testbed provided a convenient
+operator interface, handled gray-scale images from real
+sensors, and incorporated algorithm modifications that
+were needed to process gray-scale data.
+A third version incorporated a Convex C220 supercomputer along with the Sun 4/110 or SPARC workstation. The Sun/Convex testbed increased the run speed
+while maintaining the previous version's operator interface and options. We used the Sun/Convex testbed to
+test the databases of military vehicles and Pap-smear
+unages.
+Source code for the Sun and Sun/Convex testbeds
+was written in the C programming language, and the
+programs ran under the UNIX operating system. In the
+Sun/Convex testbed, we distributed the module functions between the two computers: the Sun workstation
+performed 1/0 and interacted with the operator while
+the Convex computer carried out the VI and ART-2
+calculations. A local area network enabled communication among the separate subprograms.
+Adapting and optimizing the VI and ART-2 source
+code for the Convex computer resulted in performance
+gains that were dramatic (our colleague e. Mehanian
+optimized the ART-2 algorithm). For example, the Sunl
+Convex testbed ran VI over a 175 x 175 image in only
+45 sec, while a Sun 4/110 required 4Y2 min. On the
+Convex, ART-2 learned the corresponding feature vector
+in only 18 sec, as compared to 20 min on a Sun 4/110.
+Figure 4 shows the Sun screen display, which consists
+ofa set ofwindows. The operator enters data through the
+keyboard and selects run options with a mouse. Algorithm execution can be monitored by text and graphical
+displays. Figure 4 displays a normal cell, its histogram,
+and its feature vector.
+To test large databases, we have programmed a batch
+
+• HARVEY ET AL.
+
+A Neural Network Architecturefor General Image Recognition
+
+1 'pl i.,... ·or LGN Sun:
+8.981
+.... 1 plle' fo' V2 S1
+Is: 8.1
+L
+
+nou
+
+flle:
+
+lTM
+
+ave
+
+file:
+
+[ F
+
+ch L
+
+'l lues
+
+I ( Store
+
+LTM
+
+.lues
+
+I
+
+FIGURE 4. Sun workstation display of a Pap-smear cell, its histogram, and its feature vector.
+
+mode in which a list of input images can be read automatically from a disk me. The batch option runs
+the images through the algorithm without operator
+intervention.
+
+centering accuracy and clutter. In the following subsections we describe the classification-channel tests. (Note:
+The location-channel tests are contained in Reference 4.)
+
+Test Results
+
+We assembled a dataset of three common military vehicles: an M48A5 tank, an MI13 armored personnel
+carrier (APC), and an MIlO self-propelled howitzer. The
+database consisted of 40 images: 20 tanks, four APes,
+and 16 howitzers. The vehicles were at 700-m range,
+with orientations that varied from front-on to broadside
+to end-on, and the background consisted of trees and
+rolling hills.
+The images, intensity measurements made with a
+low-level TV camera, were 120 x 128 pixels with each
+8
+pixel containing eight bits, so that 2 gray values could
+be represented. We made no effort to improve the
+
+We tested the major subsystems to assess their performance. To simplifY the interpretation of the results, we
+tested the location and classification channels separately.
+For the classification channel, we centered, or foveated,
+the objects by hand so that the tests evaluated recognition under ideal conditions. Thus our results gave an
+upper bound on system performance because the location process introduces additional errors.
+The preliminary test results were auspicious. The system located and recognized objects in their natural settings, and the algorithm was robust with respect to
+
+Military Vehicles
+
+VOLUME 4, NUMBER 2,1991
+
+THE LINCOLN LABORATORY JOURNAl
+
+199
+
+• HARVEY ET AL.
+
+A Neural Network Architecturefor General Image Recognition
+
+dow size and sensor properties.
+We trained the system on 10 random tank images
+that spanned orientations from head-on to end-on, and
+the corresponding exemplars were stored inART-2 nodes
+othrough 9. Next we trained the system on eight howitzers, which were stored in ART-2 nodes 10 through 17.
+During training we used a Vigilance of 0.999, which
+corresponded to a 2.6° angular separation in featurevector space.
+After the training was completed, we tested the system on the remaining 22 images. Table 1, which summarizes the results, shows that the system correctly classified
+the remaining 10 tanks and eight howitzers. When the
+Vigilance was set to 0.997, which corresponded to an
+angular separation of 4.4°, the four APC images went
+to an untrained node. Thus, for this example, the systems recognition was errorless.
+FIGURE 5. Typical intensity image of a howitzer.
+
+Pap-Smear Cells
+images with, for example, preprocessing. Figure 5 shows
+a typical image of a howitzer.
+To simulate the foveation of an image, we centered a
+42 X 42-pixel window by hand. The system then generated a feature vector that contained three kinds of data:
+SUM, VI, and V2. We varied the relative weighting
+among the three components. Large SUM and V2 values resulted in VI having little effect on recognition
+while small SUM and V2 values allowed VI to playa
+predominant role. By adjusting the SUM and V2 multipliers, we gave the three feature-vector components roughly equal influence.
+To find suitable weighting values, we trained the system on a small set of images and watched the resulting
+number ofcategories that ART-2 formed. Figure 6 shows
+some of our results for an 18-image training set. Note
+that when the SUM and V2 multipliers have low values,
+the number of categories is the same as the number of
+inputs. As the SUM and V2 multipliers increase, the VI
+features become less important, and the system loses its
+ability to discriminate between certain categories. Consequently, the number ofART-2 categories decreases below
+the number of input patterns. The dotted line in Figure
+6 represents a rough boundary for this transition. To
+obtain equal weighting for SUM, VI, and V2, we chose
+a point inside the boundary near the elbow. In general,
+the SUM and V2 multiplier values depend on the win200
+
+THE LINCOLN LABORATORY JOURNAL
+
+VOLUME 4, NUMBER 2, 1991
+
+We assembled a dataset of 23 normal and 16 abnormal
+Pap-smear cells (our Lahey Clinic collaborators judged
+the cell types). The images were 175 X 175 pixels, with
+8-bit gray values. Figure 7(a) shows a typical image
+~
+f-
+
+...
+Q)
+
+c.
+
+16 Categories
+out of 18 Inputs
+
+Approximate Boundary
+
+~----------~--+
+e
+',_
+
+f-
+
+18{18
+
+16{18
+
+\
+
+~18 ~
+
+Design Value
+
+I
+I
+I
+I
+18{18 el_15{18
+I
+
+I
+
+I
+
+I
+
+I
+
+I
+
+I
+
+I
+
+j
+
+I
+
+I
+
+V2 Multiplier
+
+FIGURE 6. SUM and V2 multipliers (Figure 1) for an 18image training set of military vehicles. Note that the
+number of categories was equal to the number of input
+patterns when we selected low values for both multipliers. As we increased the values of the multipliers, the
+system lost its ability to discriminate between certain
+categories, and. the number of categories decreased below the number of inputs. The dotted line represents a
+rough boundary for this transition. We selected a design
+value inside the boundary and near the elbow of the
+curve.
+
+• HARVEY ET AL.
+
+A Neural Network Architecturefor General Image Recognition
+
+Edge-Detector Results
+
+(a)
+
+Edge-Detector Results
+
+(b)
+
+FIGURE 7. Comparison of (a) normal Pap-smear cell and (b) abnormal Pap-smear cell.
+
+of a normal cell and Figure 7(b) a typical image of an
+abnormal cell (the grid suggests the VI processing). To
+the right of the photographs, VI feature values near
+the cell's nuclei are shown.
+To train and test the system on different orientations,
+we rotated each cell image 90°, 180°, and 270°. The
+
+rotations expanded the dataset to 92 normal and 64
+abnormal cells, or 156 altogether.
+As with the military-vehicle example, we selected the
+multipliers to weight the SUM, VI, and V2 contributions about equally. We trained the system with a Vigilance of 0.99999, which corresponded to a 0.256° sepa-
+
+Table 1. Preliminary Classification Results for Military Vehicles
+System Classification
+Tank
+
+Howitzer
+
+Unknown
+
+Tank
+
+10
+
+0
+
+0
+
+Howitzer
+
+0
+
+8
+
+Armored Personnel
+Carrier
+
+0
+
+0
+
+0
+4
+
+Vehicle
+
+Note: For training, we used 10 tanks and 8 howitzers.
+
+VOLUME 4, NUMBER 2, 1991
+
+THE LINCOLN LABORATORY JOURNAL
+
+201
+
+• HARVEY ET AL.
+
+A Neural Network Architecture for General Image Recognition
+
+0.8 . - - - - - - - , - - - - - - , - - - - - - - - - .
+
+0.6
+
+Q)
+
+ro
+
+a::
+
+.... 0.4
+
+e
+
+w
+0.2
+
+OL..-----...L-----...&.ll. . .- - - J
+
+o
+
+50
+
+100
+
+150
+
+Number of Training Cells
+FIGURE 8. Error rate versus training-set size for images of Pap-smear cells.
+
+ration in feature space. (Tests showed that the separation
+of the cells in feature space varied from 0.256° to 30°.)
+Initially we chose the training sets randomly, as we
+had done with the military-vehicle dataset. The random
+selection, however, resulted in high error rates; i.e., some
+cells did not make good training examples. In general,
+those cells far from the normal-abnormal boundary in
+feature space did not help the system improve its discrimination ability. For this reason, we developed an
+iterative training method that selects cells near the
+boundary.
+To train the system iteratively, we started with two
+normal and two abnormal cells. We then tested the
+system on the remaining 152 images. We increased the
+training set by adding roughly equal numbers of false
+positives and false negatives. (False positives are normal
+cells that have been classified as abnormal. False negatives
+are abnormal cells that have been classified as normal.)
+
+The error rates of false positives and false negatives
+dropped as we repeated the procedure.
+Figure 8 shows the error rates as we varied the number
+of training examples. We should note that it is crucial to
+keep the false-negative rate small to avoid potentially
+fatal errors. The curves were produced by the iteration
+method described above.
+The results of Figure 8 suggest the system generalizes
+from its training. Mathematically speaking, the feature
+vectors lie in a 2505-dimensional vector space, as described earlier in the subsection "Feature Vector." The
+normal cells lie in a subset of that vector space, and the
+abnormal cells lie in a different subset. If the subsets
+had formed a checkerboard pattern or had a highly
+jagged boundary, training might have required all the
+images. However, the curve in Figure 8 suggests that we
+can eliminate all false negatives with far fewer images.
+Thus we believe that the boundary is comparatively
+smooth, which allows the system to generalize. Table 2
+summarizes our results; they show no false positives or
+false negatives with 118 training images.
+The results suggest that the system might have promise for initial cytology screening. Furthermore, the results
+suggest that the error rate can be decreased to less than
+5%, for example, with training sets of several hundred
+examples for each cell type. More testing is necessary
+both to confirm these preliminary results and to assess
+the system's practical value. For the system to achieve an
+error rate of less than a few percent, a much larger
+database is required.
+
+Applications and Extensions
+Reliable MY systems have many applications. Besides
+those areas of interest to MIT Lincoln Laboratory in
+
+Table 2. Preliminary Cytology Results with Iterative Training
+System Classification
+Normal
+
+Abnormal
+
+Normal
+
+26
+
+0
+
+Abnormal
+
+0
+
+12
+
+Cell Type
+
+Note: For training, we used 66 normal cells and 52 abnormal cells.
+
+202
+
+THE LINCOLN LABORATORY JOURNAL
+
+VOLUME 4, NUMBER 2, 1991
+
+• HARVEY ET AL.
+
+A Neural Network Architecturefor General Image Recognition
+
+remote sensing and automatic target recognition, other
+uses include medical screening, industrial inspection,
+and robot vision. The architecture ofour system is applicable to these diverse areas.
+The basic system architecture is also extendable, and
+the following subsections describe several possible extensions. We should note that the examples include new
+principles and so are speculative.
+
+Sensor Fusion
+A direct extension of our research is to combine parallel
+sensors. Figure 9 shows a fusion concept at the featurevector level. The bottom system is our basic system with
+minor additions, and the top is another system, which
+can be a different type.
+The two systems produce features that train the classifier. Using video and laser-radar range images, we have
+done preliminary tests of this concept [6].
+
+Moving Objects
+Another extension is the capability to track and recognize moving objects. Figure 10 shows a conceptual block
+diagram in which an object in the FOV is moving in
+an arbitrary direction. To detect this motion, we can
+
+add modules that are sensltlve to the motion of
+edges at multiple orientations. These motion detectors would mimic the characteristics of biological vision
+systems.
+In Figure 10, the system feeds signals from the motion detectors back to the SUPERC module for tracking, and the motion-detection features are stored in
+the feature vector for recognition. To use time-varying
+features for recognition, we can replace the ART-2
+module by an Avalanche neural network [7]. This modification would enable the recognition of, for example,
+a flying butterfly [8].
+
+Binocular Vision
+For an extension to binocular vision, Figure 11 shows a
+block diagram of two of our basic systems working in
+parallel. In the figure, the SUPERC module points
+the two "eyeballs," and the left and right FOV of each
+sensor (denoted as Ll, L2, R1, and R2, respectively)
+go separately to two LGNs for calibration and
+normalization.
+The system uses parallel sets of feature detectors,
+and the feature vector consists of the left and right
+features and their difference, or disparity. The clas-
+
+Imaging or Nonimaging Sensor
+'Q)
+
+00
+00
+
+~
+
+Instantaneous FOV
+
+U
+
+""C
+
+•
+
+Q)
+
+00
+
+~
+
+~
+
+00
+00
+
+<tl
+
+U
+""C
+Q)
+
+00
+
+Q)
+
+~
+
+:l
+00
+
+a.
+
+a.
+C
+
+::::>
+
+Store
+Result
+
+Q)
+
+:l
+
+en
+
+Medium-Receptive-Area Outputs
+
+Feedback for Second Look
+
+FIGURE 9. Block diagram showing a system that combines two parallel sensors.
+
+VOLUME 4, NUMBER 2, 1991
+
+THE LINCOLN LABORATORY JOURNAL
+
+203
+
+• HARVEY ET AL.
+
+A Neural Network Architecturefor General Image Recognition
+
+the network module. Output from the command-generating neural network drives other modules that
+give speed, steering, and braking commands to the
+automobile.
+
+sifier is similar to the classifier of the basic system.
+
+Vision-Motor Systems
+We end on a more speculative note by describing a
+neural network system for driving a car. Figure 12 shows
+the conceptual block diagram.
+The video sensor, with two pointing angles, is part of
+the basic vision system. (We should note in passing that
+Boston driving requires more than one camera.) An
+addition to the vision system is the GAZE channel,
+which gives direction information that combines with
+the visual features to form the feature vector. The ITC is
+like that of the basic system: its output drives a command-generating neural network. The network used is
+Vector Integration to Endpoint (VITE) [9], a type of
+neural network that models biological motor systems.
+During the learning process, the adaptive elements are in
+
+~
+
+.
+525
+
+LGN
+
+SUM
+
+I
+I
+
+CALIBRATE
+
+NORMALIZE
+
+I ......
+I
+
+.-"0.
+
+I
+
+Fine
+Adjustment
+
+MOVING
+EDGES
+
+I
+
+A17
+
+8
+
+V1
+~
+
+~
+
+I
+
+A20
+
+ITC1
+
+...
+
+A21
+
+IVISAREA21
+
+t
+
+Coarse
+Adjust.ent
+
+.
+
+•
+•
+
+V21 AVERAGE
+
+Qv'r-+
+
+~
+
+We have developed a general-purpose machine vision
+(MY) system for recognizing stationary visual objects in
+their natural settings. The system uses neural networks
+and standard processing to model selected functions of
+human vision. The recognition is experiential, i.e., based
+solely on prior examples, and the system performance
+improves through experience.
+We tested the system with images of military vehicles
+and human cervical smears, and the results were very
+encouraging. In fact, the results suggest that a practical
+system might be feasible.
+
+A18
+
+Input
+Image
+
+1
+
+Summary
+
+I
+
+SPIRAL
+MAP
+
+. .
+ITC2
+
+STORE
+
+I
+~
+
+IVISAREA11
+A71
+
+PPC
+SUPERC I-HADJUSTMENT
+
+t t
+
+I
+
+II
+
+DELTA1
+
+I~
+
+DELTA2 I
+
+I
+
+Enable
+
+. . . Principal Data Flow Paths
+... Tuning and Control Paths
+
+FIGURE 10. Block diagram of neural network architecture for moving objects. (Note: See the box "Glossary of
+Acronyms" for definitions of the acronyms used.)
+
+204
+
+THE LINCOLN LABORATORY JOURNAL
+
+VOLUME 4. NUMBER 2. 1991
+
+• HARVEY ET AL.
+
+A Neural Network Architecture for General Image Recognition
+
+LGN
+
+,A---....-J~
+
+-./CALIBRATE
+
+ITC
+
+I.. . . . . ~
+
+o
+
+w
+
+o
+
+>
+c::
+
+(J)
+
+(J)
+
+:::>
+
+(J)
+
+w
+a..
+:::>
+
+z
+
+w
+
+>
+c::
+~
+
+Store
+
+(J)
+
+:::>
+
+FIGURE 11. Block diagram of neural network architecture for binocular vision. (Note: See the box "Glossary of
+Acronyms" for definitions of the acronyms used.)
+
+We believe this approach to MY is promising for
+many applications. At Lincoln Laboratory we are studying improvements that include motion detection, application to microwave radar and passive/active infrared
+imagery, and integration into complex systems. We are
+also considering the hardware implementation of selected modules.
+
+We wish to acknowledge our Lincoln Laboratory
+colleagues Mary Fouser, Al Gschwendtner, Pat
+Hirschler-Marchand, Paul Kolodzy, Gloria Liias,
+Courosh Mehanian, Murali Menon, and Alex Sonnenschein for their help and valuable discussions.
+We are also grateful to Prof John Uhran, Jr., of the
+University of Notre Dame, and Dr. Barney Reiffen and
+Prof Mike Carter of the University of New Hampshire
+for their consultation during this work. Special thanks
+go to our Lahey Clinic Medical Center collaborators
+Drs. Mark Silverman and John Dugan.
+This work was supported by the Department of the
+Air Force.
+
+Acknowledgments
+The Innovative Research Program at Lincoln Laboratory supported this work from February 1989 to
+January 1990. Our supervisor, Robert Rafuse, gave
+us much encouragement.
+
+•
+
+VISION
+FEATURES
+
+Speed
+Commands
+
+ITC
+
+TARGET
+COMMAND
+MAP
+
+Steer
+Commands
+Brake
+Commands
+
+GAZE
+FEATURES
+
+FIGURE 12. Block diagram of neural network architecture for driving a car. (Note: VITE, or Vector Integration to
+Endpoint, is a type of neural network that models biological motor systems.)
+
+VOLUME 4. NUMBER 2. 1991
+
+THE LINCOLN LABORATORY JOURNAL
+
+205
+
+• HARVEY ET AL.
+
+A Neural Network ArchitecturefOr General Image Recognition
+
+REFERENCES
+1. A. Rosenfeld, "Computer Vision: Basic Principles," Proc. IEEE
+76,863 (1988).
+2. D.C. Van Essen and ].H.R. Maunsell, "Hierarchical Organization and Functional Streams in the Visual Cortex," Trends
+Neurosci. 6, 370 (1983).
+3. F. Crick and C. Asanuma, "Certain Aspects of the Anatomy
+and Physiology of the Cerebral Cortex," in Paralfel Distributed
+Processing, Vol. 2, eds.]. McClelland and D. Rumelhart (MIT
+Press, Cambridge, MA, 1986), pp. 333-37l.
+4. R.L. Harvey, P.N. DiCaprio, and K.G. Heinemann, "A Neural Architecture for Visual Recognition of General Objects by Machines," Technical Report, MIT Lincoln
+
+206
+
+THE LINCOLN LABORATORY JOURNAL
+
+VOLUME 4. NUMBER 2, 1991
+
+5.
+
+6.
+
+7.
+8.
+9.
+
+Laboratory (to be published).
+G.A. Carpenter and S. Grossberg, "ART 2: Self-Organization
+of Stable Category Recognition Codes for Analog Input Patterns," Appl. Opt. 26, 4919 (1987).
+R.L. Harvey and K.G. Heinemann, "A Biological Vision Model
+for Sensor Fusion," IEEE 4th Nat!. Symp. on Semor Fusion
+(to be published).
+S. Grossberg, Studies ofMind and Brain (D. Reidel, Boston,
+1982).
+K.A.C. Martin and V.H. Perry, "On Seeing a Butterfly: The
+Physiology of Vision," Sci. Prog., Oxf 72, 259 (1988).
+D. Bullock and S. Grossberg, "Neural Dynamics of Planned
+Arm Movements: Emergent Invariants and Speed-Accuracy
+Properties during Trajectory Formation," in Neural Networks
+and Natural Intelligence, ed. S. Grossberg (MIT Press, Cambridge, MA, 1988), pp. 553-622.
+
+• HARVEY ET AL.
+
+A Neural Network Architecturefor General Image Recognition
+
+•
+
+ROBERT L. HARVEY
+
+PAUL N. DICAPRIO
+
+KARL G. HEINEMANN
+
+is a staff member in the OptoRadar Systems Group, where
+his focus in research has been
+in space technology, sensor
+systems, and neural networks.
+Before joining Lincoln
+Laboratory in 1972, Bob
+worked for the Conductron
+Corp. He received the
+following degrees from the
+University of Michigan: a
+B.S.E. in aerospace and
+mechanical engineering, and a
+Ph.D. in aerospace engineering. He is a member ofTau
+Beta Pi, IEEE, the American
+Institute ofAeronautics and
+Astronautics (AIM), and the
+International Neural Network
+Society (INNS).
+
+received a B.S. degree in
+computer science from John
+Carroll University and an M.S.
+degree in computer engineering
+and science from Case Western
+Reserve University. Paul
+worked for Conley, Canitano
+and Associates Inc. before
+joining Lincoln Laboratory
+three years ago. An associate
+staff member in the OptoRadar Systems Group, he
+specializes in connectionist
+models and interactive 3-D
+visualization.
+
+is an assistant staff member in
+the Opto-Radar Systems
+Group, where he designs
+algorithms and software for
+advanced sensor systems. He
+specializes in vision and neural
+networks. Karl worked at the
+Smithsonian Astrophysical
+Observatory before joining
+Lincoln Laboratory in 1979.
+He received a B.A. degree in
+physics from Swarthmore
+College and has done graduate
+work in astronomy at Cornell
+University. He is a member of
+the American Association for
+the Advancement of Science
+(AMS) and the International
+Neural Network Society
+(INNS) .
+
+•
+
+VOLUME 4, NUMBER 2, 1991
+
+THE LINCOLN LABORATORY JOURNAL
+
+207
+
+•
+,
+
+
