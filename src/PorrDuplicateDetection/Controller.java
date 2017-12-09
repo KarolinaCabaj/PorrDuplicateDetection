@@ -2,10 +2,7 @@ package PorrDuplicateDetection;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Created by Karolka on 2017-11-23.
@@ -27,38 +24,56 @@ public class Controller {
      private HashMap<String,Integer> repeats(ArrayList<String> text){
         HashMap<String,Integer> countMap = new HashMap<>();
         int count;
-        for (String w: wordsListToCheck) {
-            count=0;
-            //System.out.println(wordsListToCheck.size());
-            for (String s: text) {
-                if(w.equals(s)){
-                    count++;
-                    //System.out.println(count);
-                }
+        /*--------------------------------ZAGNIEZDZONY FOR --------------------------*/
+
+        for (int w = 0; w < wordsListToCheck.size(); w++)
+        {
+            count = 0;
+            for ( int s = 0; s < text.size(); s++)
+            {
+                if(wordsListToCheck.get(w).equals(text.get(s)))
+                    count ++;
             }
-            countMap.put(w,count);
-            }
-            countMap.entrySet().forEach(System.out::println);
-        return countMap;
+            countMap.put(wordsListToCheck.get(w), count);
         }
+        countMap.entrySet().forEach(System.out::println);
+        return  countMap;
+     }
 
     private HashMap<String,Integer> minimum(HashMap<String,Integer> a, HashMap<String,Integer>b){
         HashMap<String,Integer> final_list = new HashMap<>();
-            for (Map.Entry<String,Integer> entry : a.entrySet())
+        /*------------------------------------------------FOR ------------------------------------------------------*/
+            /*for (Map.Entry<String,Integer> entry : a.entrySet())
             {
                 if(  entry.getValue() < b.get(entry.getKey())){
                     final_list.put(entry.getKey(), entry.getValue());
                 }
                 else
                     final_list.put(entry.getKey(), b.get(entry.getKey()));
+            }*/
+
+            for (Iterator<Map.Entry<String, Integer>> entries = a.entrySet().iterator(); entries.hasNext(); )
+            {
+                Map.Entry<String, Integer> entry = entries.next();
+                if(entry.getValue() < b.get(entry.getKey()))
+                    final_list.put(entry.getKey(), entry.getValue());
+                else
+                    final_list.put(entry.getKey(), b.get(entry.getKey()));
+
             }
         return final_list;
     }
     private int sumRepeats(HashMap<String,Integer> finalMap){
         int sum=0;
-        for (Map.Entry<String,Integer> map:
+        /*--------------------------------------------FOR ----------------------------------------------------*/
+        /*for (Map.Entry<String,Integer> map:
                 finalMap.entrySet()) {
             sum+=map.getValue();
+        }*/
+        for(Iterator<Map.Entry<String, Integer>> entries = finalMap.entrySet().iterator(); entries.hasNext(); )
+        {
+            Map.Entry<String, Integer> entry = entries.next();
+            sum += entry.getValue();
         }
         return sum;
     }

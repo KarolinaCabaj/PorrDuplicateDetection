@@ -33,9 +33,14 @@ public class Text {
     public void readText()
     {
         try{
-            for (String aListOfWordsFromText : listOfWordsFromText) {
-                System.out.println(aListOfWordsFromText);
+            /*-----------------------------------------------FOR---------------------------------------*/
+            for (int i =0; i<listOfWordsFromText.size(); i++)
+            {
+                System.out.println(listOfWordsFromText.get(i));
             }
+            /*for (String aListOfWordsFromText : listOfWordsFromText) {
+                System.out.println(aListOfWordsFromText);
+            }*/
         }
         catch(Exception e){
             e.printStackTrace();
@@ -48,6 +53,7 @@ public class Text {
         try{
             file = new File(filePath);
             s = new Scanner(file, "utf-8");
+            /*----------------------------------------WHILE--------------------------------------*/
             while (s.hasNext()) {
                 String str = new String(s.next());
                 listOfWordsFromText.add(changeCharacter(str));
@@ -63,8 +69,13 @@ public class Text {
 
     private String changeCharacter(String str)
     {
-        for (String ch: listCharacterToChange) {
+        /*--------------------------------------------------------------FOR --------------------------------*/
+        /*for (String ch: listCharacterToChange) {
                 str = str.replace(ch , "");
+        }*/
+        for(int ch = 0; ch < listCharacterToChange.size(); ch ++)
+        {
+            str = str.replace(listCharacterToChange.get(ch), "");
         }
         return str;
     }
