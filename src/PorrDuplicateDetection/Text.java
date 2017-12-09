@@ -16,7 +16,7 @@ public class Text {
     private File file;
     private String filePath;
     private ArrayList<String> listOfWordsFromText;
-    ArrayList<String> listCharacterToChange = new ArrayList<>(Arrays.asList(".", ",", ";", ":", ")", "(", " - ", "[", "]"));
+    ArrayList<String> listCharacterToChange = new ArrayList<>(Arrays.asList(".", ",", ";", ":", ")", "(", " - ", "[", "]", "?", "!"));
 
     Text(String filePath)
     {

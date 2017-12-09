@@ -72,6 +72,9 @@ public class Controller {
                 repeats(examinedText.getListOfWordsFromText())
             )
         );
+
+        System.out.println("Ilosc słow w textBase: " + baseText.getListOfWordsFromText().size());
+        System.out.println("Ilosc słow w textExamined: " + examinedText.getListOfWordsFromText().size());
         System.out.println("Poziom podobienstwa: " + (double)sum/baseText.getListOfWordsFromText().size()*100 + "%");
     }
 }
