@@ -8,7 +8,7 @@ public class Main {
     {
         //long startTime = System.currentTimeMillis();
         long startTime = System.nanoTime();
-
+        ////test czy galaź działa
         Text baseText = new Text("6_image.txt");
         System.out.println("to sa dla text cos1");
         baseText.readText();

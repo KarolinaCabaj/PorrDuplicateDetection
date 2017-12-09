@@ -1,11 +1,10 @@
 package PorrDuplicateDetection;
 
-import java.io.File;
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
+
 
 /**
  * Created by Karolka on 2017-11-23.
@@ -46,9 +45,9 @@ public class Controller {
         HashMap<String,Integer> final_list = new HashMap<>();
             for (Map.Entry<String,Integer> entry : a.entrySet())
             {
-                if(  entry.getValue() < b.get(entry.getKey())){
+                if(  entry.getValue() < b.get(entry.getKey()))
                     final_list.put(entry.getKey(), entry.getValue());
-                }
+
                 else
                     final_list.put(entry.getKey(), b.get(entry.getKey()));
             }
